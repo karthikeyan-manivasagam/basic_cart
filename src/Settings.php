@@ -7,7 +7,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Url as Url;
 use Drupal\Core\Link as Link;
 
-abstract class Settings
+class Settings
 {
   protected $checkout_settings;
   protected $cart_settings;
@@ -17,7 +17,6 @@ abstract class Settings
   const BASICCART_ORDER    = 'basic_cart_order';
 
     // Force Extending class to define this method
-  abstract public static function isBasicCartOrder($bundle);
 
   public  function  checkoutSettings() {
     $return = \Drupal::config('basic_cart.checkout');
@@ -163,63 +162,4 @@ public static function listPriceFormats() {
 	  return (object) $return;
 	}
 
-     public static function getCartContent() {
-    //$Utility  = $this;
-    $config = self::cartSettings();
-    $cart = \Drupal\basic_cart\Utility::getCart();
-    $quantity_enabled = $config->get('quantity_status');
-    $total_price = self::getTotalPrice();
-    $cart_cart = isset($cart['cart']) ? $cart['cart'] : array();
-    $output = '';
- if (empty($cart_cart)){
-  $output .= '<div class="basic_cart-grid basic-cart-block">'.t($config->get('empty_cart')).'</div>';
-  } 
-else {
-
-  $output .= '<div class="basic_cart-grid basic-cart-block">';
-  if(is_array($cart_cart) && count($cart_cart) >= 1){
-    foreach($cart_cart as $nid => $node){
-    $langcode = $node->language()->getId();
-      $price_value = $node->getTranslation($langcode)->get('add_to_cart_price')->getValue();
-      $title = $node->getTranslation($langcode)->get('title')->getValue();
-
-      $url = new Url('entity.node.canonical',array("node"=>$nid));
-
-      $link = new Link($title[0]['value'],$url);
-         $output .= '<div class="basic_cart-cart-contents row">
-          <div class="basic_cart-cart-node-title cell">'.$link->toString().'</div>';
-         if($quantity_enabled) {
-          $output .= '<div class="basic_cart-cart-quantity cell">'.$cart['cart_quantity'][$nid].'</div>';
-          $output .= '<div class="basic_cart-cart-x cell">x</div>';
-         }
-         
-         $output .='<div class="basic_cart-cart-unit-price cell">';
-       $output .= isset($price_value[0]) ? '<strong>'.self::formatPrice($price_value[0]['value']).'</strong>' : '';
-       $output .='</div>
-        </div>';
-    }
-
-       $output .=  '<div class="basic_cart-cart-total-price-contents row">
-        <div class="basic_cart-total-price cell">
-            '.t($config->get('total_price_label')).':<strong>'.self::formatPrice($total_price->total).'</strong>
-        </div>
-      </div>';
-        if (!empty ($config->get('vat_state'))) {
-       $output .='<div class="basic_cart-block-total-vat-contents row">
-          <div class="basic_cart-total-vat cell">'.t('Total VAT').': <strong>'.self::formatPrice($total_price->vat).'</strong></div>
-        </div>';
-        }
-      $url = new Url('basic_cart.cart');
-      //$link = new Link($this->t($config->get('view_cart_button')),$url);
-      $link = "<a href='".$url->toString()."' class='button'>".t($config->get('view_cart_button'))."</a>";
-        $output .='<div class="basic_cart-cart-checkout-button basic_cart-cart-checkout-button-block row">
-        '.$link.'
-      </div>';
-  }
-  $output .= '</div>';
-}
-
-
-  return $output;
-}
 } 
