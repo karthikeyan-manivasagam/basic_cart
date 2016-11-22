@@ -58,7 +58,7 @@ class CartController extends ControllerBase
     $param['entitytype'] = $query->get('entitytype') ?  $query->get('entitytype') : "node";
     $param['quantity'] = $query->get('quantity') ? (is_numeric($query->get('quantity')) ? (int) $query->get('quantity') : 1) : 1;
     Utility::addToCart($nid, $param);
-    if ($config->get('add_to_cart_redirect') != "<none>") {
+    if ($config->get('add_to_cart_redirect') != "<none>" && trim($config->get('add_to_cart_redirect'))) {
 
     } else {
     drupal_get_messages();
