@@ -168,7 +168,7 @@
 }
 
 .basic_cart-delete-image-image {
-   background-image: url("../images/delete2.png no-repeat");
+   /*background-image: url("../images/delete2.png no-repeat"); */
    background-repeat: no-repeat;
 }
 /* add to cart */
