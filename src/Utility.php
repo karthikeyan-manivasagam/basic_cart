@@ -21,15 +21,15 @@ class Utility extends Settings {
   const FIELD_ORDERCONNECT = 'orderconnect';
   const BASICCART_ORDER    = 'basic_cart_order';
 
-  private static function get_storage() {
+  private static function getStorage() {
      $user = \Drupal::currentUser();
-     $config = self::cart_settings();
+     $config = self::cartSettings();
      $storage = new CartStorageSelect($user, $config->get('use_cart_table'));
      return $storage;
   }
 
 
-  public static function is_basic_cart_order($bundle) {
+  public static function isBasicCartOrder($bundle) {
     if($bundle == self::BASICCART_ORDER) {
       return TRUE;
     }
@@ -46,9 +46,9 @@ class Utility extends Settings {
  *   Returning the shopping cart contents.
  *   An empty array if there is nothing in the cart
  */
-public static function get_cart($nid = NULL) {
-   $storage = static::get_storage();
-   return $storage->get_cart($nid);
+public static function getCart($nid = NULL) {
+   $storage = static::getStorage();
+   return $storage->getCart($nid);
 }
 
 /**
@@ -64,28 +64,28 @@ public static function get_cart($nid = NULL) {
    * @param int $nid
    *   We are using the node id to remove the node in the shopping cart
    */
-  public static function remove_from_cart($nid = NULL) {
+  public static function removeFromCart($nid = NULL) {
     $nid = (int) $nid;
-    $storage = static::get_storage();
-    $storage->remove_from_cart($nid);
+    $storage = static::getStorage();
+    $storage->removeFromCart($nid);
   }
 
 /**
  * Shopping cart reset.
  */
-  public static function empty_cart() {
-    $storage = static::get_storage();
-    $storage->empty_cart();
+  public static function emptyCart() {
+    $storage = static::getStorage();
+    $storage->emptyCart();
   }
 
-  public static function add_to_cart($id, $params = array()) {
-  $storage = static::get_storage();
-  $storage->add_to_cart($id, $params);  
+  public static function addToCart($id, $params = array()) {
+  $storage = static::getStorage();
+  $storage->addToCart($id, $params);  
   }
    
-  public function loggedinactioncart() {
-	  $storage = static::get_storage();
-    return $storage->loggedinactioncart();   
+  public function loggedInActionCart() {
+	  $storage = static::getStorage();
+    return $storage->loggedInActionCart();   
   }
 
 
@@ -95,9 +95,9 @@ public static function get_cart($nid = NULL) {
    * @return mixed
    *   Key / Value pair of field name => field type. 
    */
-  public static function  get_fields_config($type = null) {
+  public static function  getFieldsConfig($type = null) {
 
-    $config = self::cart_settings();
+    $config = self::cartSettings();
     $fields['bundle_types'] = $config->get('content_type');
       foreach ($config->get('content_type') as $key => $value) {
         if($value){
@@ -170,8 +170,8 @@ public static function get_cart($nid = NULL) {
     return (object) $fields;
   }
 
-  public static function create_fields($type = null) {
-    $fields = ($type == self::FIELD_ORDERCONNECT) ? self::get_fields_config(self::FIELD_ORDERCONNECT) : self::get_fields_config();
+  public static function createFields($type = null) {
+    $fields = ($type == self::FIELD_ORDERCONNECT) ? self::getFieldsConfig(self::FIELD_ORDERCONNECT) : self::getFieldsConfig();
     $view_modes = \Drupal::entityManager()->getViewModes('node');
     foreach($fields->fields as $field_name => $config) {
      $field_storage = FieldStorageConfig::loadByName($config['entity_type'], $field_name);
@@ -229,8 +229,8 @@ public static function get_cart($nid = NULL) {
 
 
 
-  public static function order_connect_fields() {
-    self::create_fields(self::FIELD_ORDERCONNECT);
+  public static function orderConnectFields() {
+    self::createFields(self::FIELD_ORDERCONNECT);
   } 
 }
 

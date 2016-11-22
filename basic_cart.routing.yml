@@ -15,7 +15,7 @@ basic_cart.checkout:
 basic_cart.cartremove:
  path: '/cart/remove/{nid}'
  defaults:
-  _controller: '\Drupal\basic_cart\Controller\CartController::remove_from_cart'
+  _controller: '\Drupal\basic_cart\Controller\CartController::removeFromCart'
   _title_callback: '\Drupal\basic_cart\Controller\CartController::getCartPageTitle'
  requirements:
   _permission: 'basic_cart use_cart'
@@ -26,7 +26,7 @@ basic_cart.cartremove:
 basic_cart.cartadd:
  path: '/cart/add/{nid}'
  defaults:
-  _controller: '\Drupal\basic_cart\Controller\CartController::add_to_cart'
+  _controller: '\Drupal\basic_cart\Controller\CartController::addToCart'
   _title_callback: '\Drupal\basic_cart\Controller\CartController::getCartPageTitle'
  requirements:
   _permission: 'basic_cart use_cart'
@@ -35,9 +35,9 @@ basic_cart.cartadd:
    nid:
     with_config_overrides: TRUE            
 basic_cart.create_direct_order:
- path: '/node/add/basic_cart_order'
+ path: 'node/add/basic_cart_order'
  defaults:
-  _controller: '\Drupal\basic_cart\Controller\CartController::order_create'
+  _controller: '\Drupal\basic_cart\Controller\CartController::orderCreate'
   _title: 'Create Order'
  requirements:
   _permission: 'basic_cart create_direct_orders'

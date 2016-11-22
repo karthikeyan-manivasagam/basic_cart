@@ -12,8 +12,8 @@ namespace Drupal\basic_cart;
  *
  */
 interface CartInterface {
-	public function get_cart($nid = NULL);
-	public function remove_from_cart($nid);
-	public function empty_cart();
-	public function add_to_cart($id, $params = array());
+	public function getCart($nid = NULL);
+	public function removeFromCart($nid);
+	public function emptyCart();
+	public function addToCart($id, $params = array());
 }	

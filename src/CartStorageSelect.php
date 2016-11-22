@@ -27,21 +27,21 @@ class CartStorageSelect {
         }
     }
 
-    public  function get_cart($nid = NULL) {
-        return $this->cart->get_cart($nid);
+    public  function getCart($nid = NULL) {
+        return $this->cart->getCart($nid);
     }
 
-    public  function remove_from_cart($nid) {
-        return $this->cart->remove_from_cart($nid);
+    public  function removeFromCart($nid) {
+        return $this->cart->removeFromCart($nid);
     }
-    public  function empty_cart() {
-        return $this->cart->empty_cart();
+    public  function emptyCart() {
+        return $this->cart->emptyCart();
     }
-    public  function add_to_cart($id, $params = array()) {
-        return $this->cart->add_to_cart($id, $params);
+    public  function addToCart($id, $params = array()) {
+        return $this->cart->addToCart($id, $params);
     }
 
-    public function loggedinactioncart() {
-     return $this->cart->loggedinactioncart();
+    public function loggedInActionCart() {
+     return $this->cart->loggedInActionCart();
     }
 }

@@ -104,7 +104,7 @@ class CartSettingsForm extends ConfigFormBase {
     $form['currency']['basic_cart_price_format'] = array(
     '#title' => t('Price format'),
     '#type' => 'select',
-    '#options' => Utility::_price_format(),
+    '#options' => Utility::listPriceFormats(),
     '#description' => t("Please choose the format in which the price will be shown."),
     '#default_value' => $config->get('price_format'),
     );
@@ -292,7 +292,7 @@ class CartSettingsForm extends ConfigFormBase {
       ->set('order_status',$form_state->getValue('basic_cart_order_status'))
       ->set('use_cart_table',$form_state->getValue('basic_cart_use_cart_table'))
       ->save();
-     Utility::create_fields();
+     Utility::createFields();
 
     foreach($form_state->getValue('basic_cart_content_types') as $key => $value){
      $content_types[$key] = $value ? $value : $content_types[$key];

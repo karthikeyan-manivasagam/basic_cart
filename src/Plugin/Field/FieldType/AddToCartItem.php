@@ -47,7 +47,7 @@ class AddToCartItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-    $config = Utility::cart_settings();
+    $config = Utility::cartSettings();
     $properties['value'] = DataDefinition::create('boolean')
       ->setLabel(t($config->get('add_to_cart_button')));
    // $properties['no_ui'] = TRUE;

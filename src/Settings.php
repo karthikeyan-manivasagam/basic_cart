@@ -17,20 +17,20 @@ abstract class Settings
   const BASICCART_ORDER    = 'basic_cart_order';
 
     // Force Extending class to define this method
-  abstract public static function is_basic_cart_order($bundle);
+  abstract public static function isBasicCartOrder($bundle);
 
-  public  function  checkout_settings() {
+  public  function  checkoutSettings() {
     $return = \Drupal::config('basic_cart.checkout');
     return $return;
   }
 
-  public static function  cart_settings() {
+  public static function  cartSettings() {
     $return = \Drupal::config('basic_cart.settings');
     return $return;
   }
 
-  public static  function cart_updated_message() {
-    $config = static::cart_settings();
+  public static  function cartUpdatedMessage() {
+    $config = static::cartSettings();
     drupal_set_message(t($config->get('cart_updated_message')));
   }
 
@@ -42,8 +42,8 @@ abstract class Settings
  * @return $price
  *   The price in the custom format.
  */
-public static function price_format($price) {
-  $config = self::cart_settings();
+public static function formatPrice($price) {
+  $config = self::cartSettings();
   $format = $config->get('price_format');
   $currency = $config->get('currency');
 
@@ -95,8 +95,8 @@ public static function price_format($price) {
  * @return $formats
  *   A list with the available price formats.
  */
-public static function _price_format() {
-  $config = self::cart_settings();
+public static function listPriceFormats() {
+  $config = self::cartSettings();
   $currency = $config->get('currency');
   return array(
     0 => t('1 234,00 @currency', array('@currency' => $currency)),
@@ -120,9 +120,9 @@ public static function _price_format() {
 	 * @return mixed $total_price
 	 *   The total price for the shopping cart. 
 	 */
-	public static function get_total_price() {
+	public static function getTotalPrice() {
 
-	  $config = self::cart_settings();
+	  $config = self::cartSettings();
 	  $vat = $config->get('vat_state');
 	  // Building the return array.
 	  $return = array(
@@ -130,7 +130,7 @@ public static function _price_format() {
 	    'vat' => 0,
 	    'total' => 0,
 	  );
-	  $cart = static::get_cart();
+	  $cart = static::getCart();
 
 	  if (empty($cart)) {
 	    return (object) $return;
@@ -163,12 +163,12 @@ public static function _price_format() {
 	  return (object) $return;
 	}
 
-     public static function get_cart_content() {
+     public static function getCartContent() {
     //$Utility  = $this;
-    $config = self::cart_settings();
-    $cart = \Drupal\basic_cart\Utility::get_cart();
+    $config = self::cartSettings();
+    $cart = \Drupal\basic_cart\Utility::getCart();
     $quantity_enabled = $config->get('quantity_status');
-    $total_price = self::get_total_price();
+    $total_price = self::getTotalPrice();
     $cart_cart = isset($cart['cart']) ? $cart['cart'] : array();
     $output = '';
  if (empty($cart_cart)){
@@ -194,19 +194,19 @@ else {
          }
          
          $output .='<div class="basic_cart-cart-unit-price cell">';
-       $output .= isset($price_value[0]) ? '<strong>'.self::price_format($price_value[0]['value']).'</strong>' : '';
+       $output .= isset($price_value[0]) ? '<strong>'.self::formatPrice($price_value[0]['value']).'</strong>' : '';
        $output .='</div>
         </div>';
     }
 
        $output .=  '<div class="basic_cart-cart-total-price-contents row">
         <div class="basic_cart-total-price cell">
-            '.t($config->get('total_price_label')).':<strong>'.self::price_format($total_price->total).'</strong>
+            '.t($config->get('total_price_label')).':<strong>'.self::formatPrice($total_price->total).'</strong>
         </div>
       </div>';
         if (!empty ($config->get('vat_state'))) {
        $output .='<div class="basic_cart-block-total-vat-contents row">
-          <div class="basic_cart-total-vat cell">'.t('Total VAT').': <strong>'.self::price_format($total_price->vat).'</strong></div>
+          <div class="basic_cart-total-vat cell">'.t('Total VAT').': <strong>'.self::formatPrice($total_price->vat).'</strong></div>
         </div>';
         }
       $url = new Url('basic_cart.cart');

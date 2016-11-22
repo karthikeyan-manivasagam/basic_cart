@@ -95,7 +95,7 @@ class OrderConnectStorage {
   }
 
 
-  public static function order_delete($entry) {
+  public static function orderDelete($entry) {
     db_delete(self::TABLE)
          ->condition('oid', $entry['oid'])
          ->condition('entitytype', $entry['entitytype'])

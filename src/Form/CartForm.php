@@ -25,9 +25,8 @@ class CartForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
       // Getting the shopping cart.
-    $Utility = new Utility();
-    $cart = $Utility::get_cart();
-    $config = $Utility::cart_settings();  
+    $cart = Utility::getCart();
+    $config = Utility::cartSettings();  
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     // And now the form.
     $form['cartcontents'] = array(
@@ -43,7 +42,7 @@ class CartForm extends FormBase {
         '#size' => 1,
         '#quantity_id'  => $nid,
         "#suffix" =>    '</div></div></div>',
-        "#prefix" => $this->get_quantity_prefix_suffix($nid,$langcode),
+        "#prefix" => $this->getQuantityPrefixSuffix($nid,$langcode),
         '#default_value' => $quantity,
         // TO DO  
        //'#url' => $cart['cart'][$nid]->urlInfo('canonical'),
@@ -53,7 +52,7 @@ class CartForm extends FormBase {
 
     // Total price.
     $form['total_price'] = array(
-      '#markup' => $this->get_total_price_markup(),
+      '#markup' => $this->getTotalPriceMarkup(),
       '#prefix' => '<div class="basic_cart-cart basic_cart-grid">',
       '#suffix' => '</div>',
      // '#theme' => 'cart_total_price',
@@ -88,8 +87,7 @@ class CartForm extends FormBase {
    * {@inheritdoc}
    */
  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $Utility = new Utility();
-    $config = $Utility::cart_settings();  
+    $config = Utility::cartSettings();  
 
     if($config->get('quantity_status')) {
 
@@ -104,9 +102,9 @@ class CartForm extends FormBase {
           unset($_SESSION['basic_cart']['cart_quantity'][$nid]);
         }
       }
-      $Utility::cart_updated_message();
+      Utility::cartUpdatedMessage();
     }
-    $config = Utility::cart_settings();
+    $config = Utility::cartSettings();
     if($config->get('order_status') && $form_state->getValue('checkout')) {
       $url = new Url('basic_cart.checkout');    
       $form_state->setRedirectUrl($url);
@@ -114,11 +112,10 @@ class CartForm extends FormBase {
   }
 
 
-  public function get_total_price_markup(){
-    $Utility = new Utility();
-    $price = $Utility::get_total_price();
-    $total = $Utility::price_format($price->total);
-    $config = $Utility::cart_settings();
+  public function getTotalPriceMarkup() {
+    $price = Utility::getTotalPrice();
+    $total = Utility::formatPrice($price->total);
+    $config = Utility::cartSettings();
     // Building the HTML.
     $html  = '<div class="basic_cart-cart-total-price-contents row">';
     $html .= '  <div class="basic_cart-total-price cell">' . t($config->get('total_price_label')) . ': <strong>' . $total . '</strong></div>';
@@ -126,7 +123,7 @@ class CartForm extends FormBase {
     
     $vat_is_enabled = (int) $config->get('vat_state');
     if (!empty ($vat_is_enabled) && $vat_is_enabled) {
-      $vat_value = $Utility::price_format($price->vat);
+      $vat_value = Utility::formatPrice($price->vat);
       $html .= '<div class="basic_cart-cart-total-vat-contents row">';
       $html .= '  <div class="basic_cart-total-vat cell">' . t('Total VAT') . ': <strong>' . $vat_value . '</strong></div>';
       $html .= '</div>';
@@ -134,11 +131,11 @@ class CartForm extends FormBase {
     return $html;
   }
 
-  public function get_quantity_prefix_suffix($nid,$langcode) {
+  public function getQuantityPrefixSuffix($nid, $langcode) {
     $url = new Url('basic_cart.cartremove', array("nid" => $nid));
     $link = new Link('X',$url);
     $delete_link = '<span class="basic_cart-delete-image-image">'.$link->toString().'</span>';
-    $cart = Utility::get_cart($nid);
+    $cart = Utility::getCart($nid);
      if(!empty($cart['cart'])) {
     $unit_price = $cart['cart']->getTranslation($langcode)->get('add_to_cart_price')->getValue();  
     $unit_price = isset($unit_price[0]['value']) ? $unit_price[0]['value'] : 0;
@@ -147,7 +144,7 @@ class CartForm extends FormBase {
     $url = new Url('entity.node.canonical',array("node"=>$nid));
     $link = new Link($title,$url);
     $unit_price = isset($unit_price) ? $unit_price : 0;
-    $unit_price = Utility::price_format($unit_price);
+    $unit_price = Utility::formatPrice($unit_price);
     
     // Prefix.
     $prefix  = '<div class="basic_cart-cart-contents row">';

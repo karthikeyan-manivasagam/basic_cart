@@ -21,14 +21,13 @@ class CartBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $utility = new Utility();
-  	$config = $utility::cart_settings();
+  	$config = Utility::cartSettings();
      return array(
       //'#theme' => 'basic_cart_cart_template',
       //'#basic_cart' => array(),	
       '#type' => 'markup',
       '#title' => $config->get('cart_block_title'),
-      '#markup' => $utility->get_cart_content(),
+      '#markup' => Utility::getCartContent(),
       '#cache' => array('max-age' => 0),
     );
   }

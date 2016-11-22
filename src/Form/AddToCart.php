@@ -20,7 +20,7 @@ class AddToCart extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $id = NULL, $entitytype = NULL, $langcode = NULL) {
-    $config = Utility::cart_settings();
+    $config = Utility::cartSettings();
     $form['id'] = array(
       '#type' => 'hidden',
       '#required' => TRUE,
@@ -53,7 +53,7 @@ class AddToCart extends FormBase {
    $langcode = $form_state->getValue('langcode');
    $entitytype = $form_state->getValue('entitytype');
    $params = array("quantity" => 1, "langcode" => $langcode, "entitytype" => $entitytype);
-   Utility::add_to_cart($id, $params);
+   Utility::addToCart($id, $params);
   }
 
 }

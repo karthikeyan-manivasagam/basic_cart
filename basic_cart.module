@@ -47,8 +47,8 @@ function basic_cart_page_attachments(array &$page) {
 
 function basic_cart_entity_insert(EntityInterface $node) {
    $utility = new Utility();
-  if($utility::is_basic_cart_order($node->bundle())) {
-    $get_cart = $utility::get_cart();
+  if(Utility::isBasicCartOrder($node->bundle())) {
+    $get_cart = $utility::getCart();
     $cart     = $get_cart['cart'];
     $nid   = $node->id();
     basic_cart_order_send_notifications($node);
@@ -60,7 +60,7 @@ function basic_cart_entity_insert(EntityInterface $node) {
       $params['quantity']  = $get_cart['cart_quantity'][$key];
       $order->insert($params);
     }
-   $utility::empty_cart();
+   $utility::emptyCart();
   } 
 }
 
@@ -84,9 +84,8 @@ function basic_cart_form_alter(&$form,FormStateInterface $form_state, $form_id) 
 */
 
 function basic_cart_entity_presave(EntityInterface $node) {
-   $utility = new Utility();
-  if($utility::is_basic_cart_order($node->bundle())) {
-    $get_price = $utility::get_total_price();
+  if(Utility::isBasicCartOrder($node->bundle())) {
+    $get_price = Utility::getTotalPrice();
      $bundle = $node->bundle();
     if(empty($node->id())) {
       $node->set('basic_cart_vat', $get_price->vat);
@@ -101,15 +100,14 @@ function basic_cart_entity_presave(EntityInterface $node) {
 
 function basic_cart_entity_delete(EntityInterface $node) {
    $utility = new Utility();
-  if($utility::is_basic_cart_order($node->bundle())) {
+  if(Utility::isBasicCartOrder($node->bundle())) {
     $entitytype = $node->getEntityTypeId();
     $id = $node->id();
     $bundle = $node->bundle();
     if(isset($entitytype) && isset($id)){
        $params['oid'] = $id;
        $params['entitytype'] = $entitytype;  
-       $order = new OrderConnectStorage();
-       $order->order_delete($params);
+       OrderConnectStorage::orderDelete($params);
     }
   } 
 }
@@ -121,7 +119,7 @@ function basic_cart_entity_delete(EntityInterface $node) {
 
 function basic_cart_mail($key, &$message, $params) {
   $utility = new Utility();
-  $config = $utility->checkout_settings();
+  $config = $utility->checkoutSettings();
    $options = array(
      'langcode' => $message['langcode'],
    );
@@ -150,7 +148,7 @@ function basic_cart_order_send_notifications($order) {
   $utility = new Utility();
   $token = \Drupal::token();
 
-  $config = $utility->checkout_settings();
+  $config = $utility->checkoutSettings();
   $message_html = $config->get('admin')['body'];
 
   // Token data.
@@ -229,10 +227,10 @@ function basic_cart_order_tokens_format(&$tokens) {
     foreach ($tokens as $token => $value) {
       switch ($token) {
         case '[basic_cart_order:basic_cart_total_price]':
-          $tokens[$token] = $utility::price_format($value->__toString());
+          $tokens[$token] = $utility::formatPrice($value->__toString());
           break;
         case '[basic_cart_order:basic_cart_vat]':
-          $tokens[$token] = $utility::price_format($value->__toString());
+          $tokens[$token] = $utility::formatPrice($value->__toString());
           break;  
       }
     }
@@ -256,7 +254,7 @@ function basic_cart_tokens($type, $tokens, array $data, array $options, Bubbleab
       switch ($name) {
         case 'products':
           $new = '';
-          $get_cart = $utility::get_cart();
+          $get_cart = $utility::getCart();
           $cart = $get_cart['cart'];
           // Building the order details.
           $i = 0;
@@ -265,7 +263,7 @@ function basic_cart_tokens($type, $tokens, array $data, array $options, Bubbleab
             $langcode = $node->language()->getId();
             $price_value = $node->getTranslation($langcode)->get('add_to_cart_price')->getValue();
             $title = $node->getTranslation($langcode)->get('title')->getValue();
-            $unit_price = $utility::price_format($price_value[0]['value']);
+            $unit_price = $utility::formatPrice($price_value[0]['value']);
             $new .= ++$i . '. ' .  $title[0]['value'] . "\t" .
                               $get_cart['cart_quantity'][$nid] . ' x ' .$unit_price  . "\n";
           }
@@ -274,7 +272,7 @@ function basic_cart_tokens($type, $tokens, array $data, array $options, Bubbleab
           $replacements[$original] = $new;
           break;
          case 'basic_cart_total_price':
-          $total = $utility::get_total_price();
+          $total = Utility::getTotalPrice();
           $langcode = $order->language()->getId();
           $title = $order->getTranslation($langcode)->get('title')->getValue();
           $replacements[$original] = !empty($total) && isset($total->total) ? $total->total : 0;
@@ -286,7 +284,7 @@ function basic_cart_tokens($type, $tokens, array $data, array $options, Bubbleab
          break;
         case 'basic_cart_vat':
           $order = $data["node"];
-          $total = $utility::get_total_price();
+          $total = Utility::getTotalPrice();
           $langcode = $order->language()->getId();
           $vat = $order->getTranslation($langcode)->get('basic_cart_vat')->getValue();
           $replacements[$original] = isset($vat[0]['value']) ? $vat[0]['value'] : 0;
@@ -318,7 +316,7 @@ function basic_cart_token_info() {
 
 function basic_cart_user_login($account) {
  $utility = new Utility();
- $utility->loggedinactioncart();
+ $utility->loggedInActionCart();
 }
 /*
 function basic_cart_views_pre_render(ViewExecutable $view) {

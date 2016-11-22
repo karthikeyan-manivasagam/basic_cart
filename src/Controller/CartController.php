@@ -24,7 +24,7 @@ class CartController extends ControllerBase
 {
  
   public function getCartPageTitle() {
-    $config = Utility::cart_settings();
+    $config = Utility::cartSettings();
     $message = $config->get('cart_page_title');
     return $this->t($message);
   }
@@ -33,8 +33,8 @@ class CartController extends ControllerBase
 
     \Drupal::service('page_cache_kill_switch')->trigger();
     $utility = new Utility();
-    $cart = $utility::get_cart();
-    $config= $utility::cart_settings(); 
+    $cart = $utility::getCart();
+    $config= $utility::cartSettings(); 
     $request = \Drupal::request();
 
     if ($route = $request->attributes->get(\Symfony\Cmf\Component\Routing\RouteObjectInterface::ROUTE_OBJECT)) {
@@ -45,19 +45,19 @@ class CartController extends ControllerBase
 
   } 
   
-  public function remove_from_cart($nid) {
+  public function removeFromCart($nid) {
     \Drupal::service('page_cache_kill_switch')->trigger();
-    $cart = Utility::remove_from_cart($nid); 
+    $cart = Utility::removeFromCart($nid); 
     return new RedirectResponse(Url::fromUri($_SERVER['HTTP_REFERER'])->toString());  
   }
 
-  public function add_to_cart($nid) {
+  public function addToCart($nid) {
     \Drupal::service('page_cache_kill_switch')->trigger();
     $query = \Drupal::request()->query;
-    $config = Utility::cart_settings();
+    $config = Utility::cartSettings();
     $param['entitytype'] = $query->get('entitytype') ?  $query->get('entitytype') : "node";
     $param['quantity'] = $query->get('quantity') ? (is_numeric($query->get('quantity')) ? (int) $query->get('quantity') : 1) : 1;
-    Utility::add_to_cart($nid, $param);
+    Utility::addToCart($nid, $param);
     if ($config->get('add_to_cart_redirect') != "<none>") {
 
     } else {
@@ -66,7 +66,7 @@ class CartController extends ControllerBase
     $response->status = TRUE;
     $response->text = '<p class="messages messages--status">'.t($config->get('added_to_cart_message')).'</p>';
     $response->id = 'ajax-addtocart-message-'.$nid;
-    $response->block = Utility::get_cart_content();
+    $response->block = Utility::getCartContent();
     return new JsonResponse($response);
     }
 
@@ -74,7 +74,7 @@ class CartController extends ControllerBase
 
     public function checkout() {
       $utility = new Utility();
-      $cart = $utility::get_cart();
+      $cart = $utility::getCart();
        if(isset($cart['cart']) && !empty($cart['cart'])) {
           $type = node_type_load("basic_cart_order"); 
           $node = $this->entityManager()->getStorage('node')->create(array(
@@ -93,7 +93,7 @@ class CartController extends ControllerBase
          return new RedirectResponse($url->toString()); 
        } 
    }    
-      public function order_create() {
+      public function orderCreate() {
         $type = node_type_load("basic_cart_order"); 
         $node = $this->entityManager()->getStorage('node')->create(array(
         'type' => $type->id(),
@@ -110,10 +110,10 @@ class CartController extends ControllerBase
      public function addToCartNoRedirect($nid) {
       \Drupal::service('page_cache_kill_switch')->trigger();
       $query = \Drupal::request()->query;
-      $config = Utility::cart_settings();
+      $config = Utility::cartSettings();
       $param['entitytype'] = $query->get('entitytype') ?  $query->get('entitytype') : "node";
       $param['quantity'] = $query->get('quantity') ? (is_numeric($query->get('quantity')) ? (int) $query->get('quantity') : 1) : 1;
-      Utility::add_to_cart($nid, $param);
+      Utility::addToCart($nid, $param);
       return new RedirectResponse(Url::fromUserInput("/".trim($config->get('add_to_cart_redirect'),'/'))->toString());  
 
      }
