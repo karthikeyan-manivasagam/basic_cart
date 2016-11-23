@@ -22,10 +22,14 @@ function basic_cart_theme($existing, $type, $theme, $path) {
       'variables' => array('price' => NULL),
     ),
     'cart_form' => array(
-       
-    'render element' => 'form',
-
+      'render element' => 'form',
     ),
+    'basic_cart_quantity_prefix' => array(
+      'variables' => array('basic_cart' => NULL),
+    ),
+    'basic_cart_quantity_suffix' => array(
+      'variables' => array('basic_cart' => NULL),
+    ),    
   );
 }
 

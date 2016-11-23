@@ -233,7 +233,7 @@ public static function getCart($nid = NULL) {
     self::createFields(self::FIELD_ORDERCONNECT);
   }
 
-  public static function renderCartBlock($template_name = 'basic-cart-cart-template.html.twig', $variable = NULL) {
+  public static function render($template_name = 'basic-cart-cart-template.html.twig', $variable = NULL) {
     $twig = \Drupal::service('twig');
     $template = $twig->loadTemplate(drupal_get_path('module', 'basic_cart') . '/templates/'.$template_name);
     return $template->render(['basic_cart' => $variable ? $variable : self::getCartData()]);
@@ -294,6 +294,31 @@ public static function getCart($nid = NULL) {
       'total_vat_label' => 'Total VAT',
     );
     return $basic_cart;
+  }
+
+  public static function quantityPrefixData($nid) {
+
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $url = new Url('basic_cart.cartremove', array("nid" => $nid));
+    $link = new Link('X',$url);
+    $cart = Utility::getCart($nid);
+    $basic_cart = array();
+    $basic_cart['delete_link'] = $link->toString();
+    $basic_cart['notempty'] = false;    
+    if(!empty($cart['cart'])) {
+      $basic_cart['notempty'] = true;     
+      $unit_price = $cart['cart']->getTranslation($langcode)->get('add_to_cart_price')->getValue();  
+      $unit_price = isset($unit_price[0]['value']) ? $unit_price[0]['value'] : 0;
+      $title = $cart['cart']->getTranslation($langcode)->get('title')->getValue()[0]['value'];
+      // Price and currency.
+      $url = new Url('entity.node.canonical',array("node"=>$nid));
+      $link = new Link($title,$url);
+      $unit_price = isset($unit_price) ? $unit_price : 0;
+      $unit_price = Utility::formatPrice($unit_price);
+      $basic_cart['unit_price'] = $unit_price;     
+      $basic_cart['title_link'] = $link->toString(); 
+    }
+     return $basic_cart;
   }
 
 }
