@@ -233,10 +233,10 @@ public static function getCart($nid = NULL) {
     self::createFields(self::FIELD_ORDERCONNECT);
   }
 
-  public static function renderCartBlock() {
+  public static function renderCartBlock($template_name = 'basic-cart-cart-template.html.twig', $variable = NULL) {
     $twig = \Drupal::service('twig');
-    $template = $twig->loadTemplate(drupal_get_path('module', 'basic_cart') . '/templates/basic-cart-cart-template.html.twig');
-    return $template->render(['basic_cart' => self::getCartData()]);
+    $template = $twig->loadTemplate(drupal_get_path('module', 'basic_cart') . '/templates/'.$template_name);
+    return $template->render(['basic_cart' => $variable ? $variable : self::getCartData()]);
   }
 
   public static function getCartData() {
@@ -276,6 +276,23 @@ public static function getCart($nid = NULL) {
         $basic_cart['empty']['status'] = false;
       }
     }
+    return $basic_cart;
+  }
+
+  public static function getTotalPriceMarkupData() {
+    $config = Utility::cartSettings();  
+    $price = Utility::getTotalPrice();
+    $total = Utility::formatPrice($price->total);
+    $vat_is_enabled = (int) $config->get('vat_state');
+    $vat_value = !empty ($vat_is_enabled) && $vat_is_enabled ? Utility::formatPrice($price->vat) : 0;
+
+    $basic_cart = array(
+      'total_price' => $total,
+      'vat_enabled' => $vat_is_enabled,
+      'vat_value' => $vat_value,
+      'total_price_label' => $config->get('total_price_label'),
+      'total_vat_label' => 'Total VAT',
+    );
     return $basic_cart;
   }
 

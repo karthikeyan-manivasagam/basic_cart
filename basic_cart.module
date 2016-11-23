@@ -18,6 +18,14 @@ function basic_cart_theme($existing, $type, $theme, $path) {
     'basic_cart_cart_template' => array(
       'variables' => array('basic_cart' => NULL),
     ),
+    'total_price_markup' => array(
+      'variables' => array('price' => NULL),
+    ),
+    'cart_form' => array(
+       
+    'render element' => 'form',
+
+    ),
   );
 }
 

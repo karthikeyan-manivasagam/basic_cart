@@ -25,9 +25,17 @@ class CartForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
       // Getting the shopping cart.
+    $form['#theme'] = 'cart_form';
+ 
+    
     $cart = Utility::getCart();
     $config = Utility::cartSettings();  
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $price = Utility::getTotalPrice();
+    $total = Utility::formatPrice($price->total);
+    $vat_is_enabled = (int) $config->get('vat_state');
+    $vat_value = !empty ($vat_is_enabled) && $vat_is_enabled ? Utility::formatPrice($price->vat) : 0;
+
     // And now the form.
     $form['cartcontents'] = array(
       // Make the returned array come back in tree form.
@@ -50,19 +58,14 @@ class CartForm extends FormBase {
       );
     }
 
-    // Total price.
-    $form['total_price'] = array(
-      '#markup' => $this->getTotalPriceMarkup(),
-      '#prefix' => '<div class="basic_cart-cart basic_cart-grid">',
-      '#suffix' => '</div>',
-     // '#theme' => 'cart_total_price',
+      $form['total_price'] = array(
+      '#markup' => Utility::renderCartBlock('total-price-markup.html.twig', Utility::getTotalPriceMarkupData()),
     );
+
+
     // Buttons.
     $form['buttons'] = array(
-      // Make the returned array come back in tree form.
       '#tree' => TRUE,
-      '#prefix' => '<div class="row"><div class="basic_cart-call-to-action cell">',
-      '#suffix' => '</div></div>',
     );
 
     $form['buttons']['update'] = array(
@@ -109,26 +112,6 @@ class CartForm extends FormBase {
       $url = new Url('basic_cart.checkout');    
       $form_state->setRedirectUrl($url);
     }
-  }
-
-
-  public function getTotalPriceMarkup() {
-    $price = Utility::getTotalPrice();
-    $total = Utility::formatPrice($price->total);
-    $config = Utility::cartSettings();
-    // Building the HTML.
-    $html  = '<div class="basic_cart-cart-total-price-contents row">';
-    $html .= '  <div class="basic_cart-total-price cell">' . t($config->get('total_price_label')) . ': <strong>' . $total . '</strong></div>';
-    $html .= '</div>';
-    
-    $vat_is_enabled = (int) $config->get('vat_state');
-    if (!empty ($vat_is_enabled) && $vat_is_enabled) {
-      $vat_value = Utility::formatPrice($price->vat);
-      $html .= '<div class="basic_cart-cart-total-vat-contents row">';
-      $html .= '  <div class="basic_cart-total-vat cell">' . t('Total VAT') . ': <strong>' . $vat_value . '</strong></div>';
-      $html .= '</div>';
-    }
-    return $html;
   }
 
   public function getQuantityPrefixSuffix($nid, $langcode) {
