@@ -27,7 +27,7 @@ class CartBlock extends BlockBase {
       //'#basic_cart' => array(),	
       '#type' => 'markup',
       '#title' => $config->get('cart_block_title'),
-      '#markup' => Utility::getCartContent(),
+      '#markup' => Utility::renderCartBlock(),
       '#cache' => array('max-age' => 0),
     );
   }

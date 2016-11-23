@@ -233,65 +233,52 @@ public static function getCart($nid = NULL) {
     self::createFields(self::FIELD_ORDERCONNECT);
   }
 
-     public static function getCartContent() {
-    //$Utility  = $this;
+  public static function renderCartBlock() {
+    $twig = \Drupal::service('twig');
+    $template = $twig->loadTemplate(drupal_get_path('module', 'basic_cart') . '/templates/basic-cart-cart-template.html.twig');
+    return $template->render(['basic_cart' => self::getCartData()]);
+  }
+
+  public static function getCartData() {
     $config = self::cartSettings();
     $cart = self::getCart();
     $quantity_enabled = $config->get('quantity_status');
     $total_price = self::getTotalPrice();
     $cart_cart = isset($cart['cart']) ? $cart['cart'] : array();
-    $output = '';
- if (empty($cart_cart)){
-  $output .= '<div class="basic_cart-grid basic-cart-block">'.t($config->get('empty_cart')).'</div>';
-  } 
-else {
 
-  $output .= '<div class="basic_cart-grid basic-cart-block">';
-  if(is_array($cart_cart) && count($cart_cart) >= 1){
-    foreach($cart_cart as $nid => $node){
-    $langcode = $node->language()->getId();
-      $price_value = $node->getTranslation($langcode)->get('add_to_cart_price')->getValue();
-      $title = $node->getTranslation($langcode)->get('title')->getValue();
+    $basic_cart = array();
+    $basic_cart['config']['quantity_enabled'] = $config->get('quantity_status');
+    $basic_cart['empty']['text'] = $config->get('empty_cart');
 
-      $url = new Url('entity.node.canonical',array("node"=>$nid));
+    if (empty($cart_cart)) {
+      $basic_cart['empty']['status'] = true;
+    } 
+    else {
+      if(is_array($cart_cart) && count($cart_cart) >= 1) {
 
-      $link = new Link($title[0]['value'],$url);
-         $output .= '<div class="basic_cart-cart-contents row">
-          <div class="basic_cart-cart-node-title cell">'.$link->toString().'</div>';
-         if($quantity_enabled) {
-          $output .= '<div class="basic_cart-cart-quantity cell">'.$cart['cart_quantity'][$nid].'</div>';
-          $output .= '<div class="basic_cart-cart-x cell">x</div>';
-         }
-         
-         $output .='<div class="basic_cart-cart-unit-price cell">';
-       $output .= isset($price_value[0]) ? '<strong>'.self::formatPrice($price_value[0]['value']).'</strong>' : '';
-       $output .='</div>
-        </div>';
-    }
-
-       $output .=  '<div class="basic_cart-cart-total-price-contents row">
-        <div class="basic_cart-total-price cell">
-            '.t($config->get('total_price_label')).':<strong>'.self::formatPrice($total_price->total).'</strong>
-        </div>
-      </div>';
-        if (!empty ($config->get('vat_state'))) {
-       $output .='<div class="basic_cart-block-total-vat-contents row">
-          <div class="basic_cart-total-vat cell">'.t('Total VAT').': <strong>'.self::formatPrice($total_price->vat).'</strong></div>
-        </div>';
+        foreach($cart_cart as $nid => $node) {
+          $langcode = $node->language()->getId();
+          $price_value = $node->getTranslation($langcode)->get('add_to_cart_price')->getValue();
+          $title = $node->getTranslation($langcode)->get('title')->getValue();
+          $url = new Url('entity.node.canonical', ["node"=>$nid]);
+          $link = new Link($title[0]['value'],$url);
+          $basic_cart['data']['contents'][$nid] = ["quantity" => $cart['cart_quantity'][$nid],'price_value' => isset($price_value[0]) ? self::formatPrice($price_value[0]['value']) : '','link' => $link->toString()]; 
         }
-      $url = new Url('basic_cart.cart');
-      //$link = new Link($this->t($config->get('view_cart_button')),$url);
-      $link = "<a href='".$url->toString()."' class='button'>".t($config->get('view_cart_button'))."</a>";
-        $output .='<div class="basic_cart-cart-checkout-button basic_cart-cart-checkout-button-block row">
-        '.$link.'
-      </div>';
+
+        $basic_cart['config']['total_price_label'] = $config->get('total_price_label');
+        $basic_cart['config']['total_price'] = self::formatPrice($total_price->total);
+        $basic_cart['config']['vat_enabled'] = $config->get('vat_state');
+        $basic_cart['config']['vat_label'] = 'Total VAT';
+        $basic_cart['config']['total_price_vat'] = self::formatPrice($total_price->vat);
+        $basic_cart['config']['view_cart_button'] =$config->get('view_cart_button');
+        $url = new Url('basic_cart.cart');
+        $basic_cart['config']['view_cart_url'] = $url->toString();
+        $basic_cart['empty']['status'] = false;
+      }
+    }
+    return $basic_cart;
   }
-  $output .= '</div>';
-}
 
-
-  return $output;
-}
 }
 
  
