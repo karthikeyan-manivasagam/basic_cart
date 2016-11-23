@@ -43,7 +43,7 @@ class CartForm extends FormBase {
       $variable = Utility::quantityPrefixData($nid);
       $form['cartcontents'][$nid] = array(
         '#type' => $config->get('quantity_status') ? 'textfield' : 'markup',
-        '#size' => 1,
+        '#size' => 2,
         '#quantity_id'  => $nid,
         "#suffix" =>  Utility::render('basic-cart-quantity-suffix.html.twig', $variable),
         "#prefix" => Utility::render('basic-cart-quantity-prefix.html.twig', $variable),
