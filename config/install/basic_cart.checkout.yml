@@ -9,4 +9,5 @@ user:
 thankyou: 
  title: Thank you
  text: "Thank you for placing an order on our website.\nWe will contact you as soon as possible."
+ custom_page: thankyou
 langcode: en

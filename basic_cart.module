@@ -10,6 +10,8 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\views\ViewExecutable;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 
@@ -29,7 +31,10 @@ function basic_cart_theme($existing, $type, $theme, $path) {
     ),
     'basic_cart_quantity_suffix' => array(
       'variables' => array('basic_cart' => NULL),
-    ),    
+    ),
+    'basic_cart_thank_you' => array(
+      'variables' => array('basic_cart' => NULL),
+    ),       
   );
 }
 
@@ -88,6 +93,11 @@ function basic_cart_form_alter(&$form,FormStateInterface $form_state, $form_id) 
       unset($form['basic_cart_vat']);
       unset($form['basic_cart_total_price']);
       $form['actions']['submit']['#value'] = t('Place Order');
+    foreach (array_keys($form['actions']) as $action) {
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+          $form['actions'][$action]['#submit'][] = 'basic_cart_order_submit';
+      }
+    }
    }
 }
 
@@ -330,6 +340,22 @@ function basic_cart_user_login($account) {
  $utility = new Utility();
  $utility->loggedInActionCart();
 }
+
+function basic_cart_order_submit(&$form, FormStateInterface $form_state, $form_id) {
+
+    $utility = new Utility();
+    $config = $utility->checkoutSettings();
+    $location = trim($config->get('thankyou')['custom_page']);
+    if($location) {
+       $redirect = \Drupal::pathValidator()
+          ->getUrlIfValid($location);
+      $form_state->setRedirectUrl($redirect);
+    }else {
+     $url = Url::fromRoute('basic_cart.thankyou');
+     $form_state->setRedirectUrl($url);
+    }
+}
+
 /*
 function basic_cart_views_pre_render(ViewExecutable $view) {
   // Scramble the order of the rows shown on this result page.

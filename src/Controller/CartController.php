@@ -117,5 +117,23 @@ class CartController extends ControllerBase
       return new RedirectResponse(Url::fromUserInput("/".trim($config->get('add_to_cart_redirect'),'/'))->toString());  
 
      }
+
+  public function getThankyouPageTitle() {
+    $utility = new Utility();
+    $config = $utility->checkoutSettings();
+    $message = $config->get('thankyou')['title'];
+    return $this->t($message);
+  }
+
+   public function thankYouPage() {
+    $utility = new Utility();
+    $config = $utility->checkoutSettings();
+      return array(
+      '#type' => 'markup',
+      '#theme' => 'basic_cart_thank_you',
+      '#basic_cart' => ['title' => $config->get('thankyou')['title'], 'text' => $config->get('thankyou')['text']],
+      );
+   }    
+       
 }
  

@@ -104,6 +104,13 @@ class CheckOutSettingsForm extends ConfigFormBase {
     '#default_value' => $config->get('thankyou')['text'],
     );
 
+    $form['thankyou']['basic_cart_thankyou_custom_page'] = array(
+    '#title' => t('Redirect to custom thankyou page url'),
+    '#type' => 'textfield',
+    '#description' => t('Redirect to your custom url after the successfull order creation.(if value given, page will be redirected to given url, instead of showing thankyou page content above)'),
+    '#default_value' => $config->get('thankyou')['custom_page'],
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -113,7 +120,7 @@ class CheckOutSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $admin = array("subject" => $form_state->getValue('basic_cart_subject_admin'),"body" => $form_state->getValue('basic_cart_administer_message'));
     $user = array("subject" => $form_state->getValue('basic_cart_subject_user'),"body" => $form_state->getValue('basic_cart_user_message'));
-    $thankyou = array("title" => $form_state->getValue('basic_cart_thankyou_page_title'),"text" => $form_state->getValue('basic_cart_thankyou_page_text'));
+    $thankyou = array("title" => $form_state->getValue('basic_cart_thankyou_page_title'),"text" => $form_state->getValue('basic_cart_thankyou_page_text'),"custom_page" => $form_state->getValue('basic_cart_thankyou_custom_page'));
     $this->config('basic_cart.checkout')
       ->set('admin_emails', $form_state->getValue('basic_cart_administrator_emails'))
       ->set('admin',$admin)
